@@ -38,6 +38,7 @@ char* dequeue(string_queue* q){
 void user_input(string_queue* q){
     char buffer[MAX_INPUT];
     fgets(buffer, sizeof(buffer), stdin); //get input
+    buffer[strcspn(buffer, "\n")] = '\0';  // Remove newline
 
     char* word = strtok(buffer, " "); //get each word separated by " "
     while(word != NULL){ //traverse the string until <-
@@ -51,7 +52,7 @@ void user_input(string_queue* q){
 int my_scanf(const char* format, ...){
     //static queue
     static string_queue input_buffer;
-if(input_buffer.capacity == 0){
+    if(input_buffer.capacity == 0){
         input_buffer.capacity = 10;
         input_buffer.size = 0;
         input_buffer.buffer = malloc(input_buffer.capacity * sizeof(char*));
@@ -62,33 +63,93 @@ if(input_buffer.capacity == 0){
     va_start(variables, format);
     
     //Format with what we have
-    for(int i = 0; format[i] != '\0'; i++){
+    for(int i = 0; i <= strlen(format); i++){
         if(format[i] == '%'){
             //IN CASE WE RAN OUT OF ELEMENTS IN THE QUEUE
             if(input_buffer.size == 0) user_input(&input_buffer);
-            for(int i = 0; i < input_buffer.size; i++){
-                printf("%s\n", input_buffer.buffer[i]);
-            }
-
-            // char format_specifier = format[i+1];
-            // switch(format_specifier){
-            //     case 'd':
-            //         printf("Found a decimal");
-            //         break;
-            // }
-            // i++; //skip the letter
+            char format_specifier = format[i+1];
+            switch (format_specifier) {
+                case 'h':
+                    if (format[i + 2] == 'd') {
+                        short* val = va_arg(variables, short*);
+                        char* token = dequeue(&input_buffer);
+                        if (!token) return -1;
+                        *val = (short) strtol(token, NULL, 10);
+                        i += 2;
+                        break;
+                    } else if (format[i + 2] == 'h' && format[i + 3] == 'd') {
+                        signed char* val = va_arg(variables, signed char*);
+                        char* token = dequeue(&input_buffer);
+                        if (!token) return -1;
+                        *val = (signed char) strtol(token, NULL, 10);
+                        i += 3;
+                        break;
+                    }
+                    break;
+            
+                case 'd': {
+                    int* val = va_arg(variables, int*);
+                    char* token = dequeue(&input_buffer);
+                    if (!token) return -1;
+                    *val = (int) strtol(token, NULL, 10);
+                    break;
+                }
+            
+                case 'l':
+                    if (format[i + 2] == 'd') {
+                        long* val = va_arg(variables, long*);
+                        char* token = dequeue(&input_buffer);
+                        if (!token) return -1;
+                        *val = strtol(token, NULL, 10);
+                        i += 2;
+                        break;
+                    } else if (format[i + 2] == 'f') {
+                        double* val = va_arg(variables, double*);
+                        char* token = dequeue(&input_buffer);
+                        if (!token) return -1;
+                        *val = strtod(token, NULL);
+                        i += 2;
+                        break;
+                    }
+                    break;
+            
+                case 'f': {
+                    float* val = va_arg(variables, float*);
+                    char* token = dequeue(&input_buffer);
+                    if (!token) return -1;
+                    *val = strtof(token, NULL);
+                    break;
+                }
+            
+                case 'c': {
+                    char* val = va_arg(variables, char*);
+                    char* token = dequeue(&input_buffer);
+                    if (!token) return -1;
+                    *val = token[0];
+                    break;
+                }
+            
+                case 's': {
+                    char* val = va_arg(variables, char*);
+                    char* token = dequeue(&input_buffer);
+                    if (!token) return -1;
+                    strcpy(val, token);
+                    break;
+                }
+            }            
+            i++; //skip the letter
         }
     }
-
     va_end(variables);
-
     return 0;
 }
 
 int main(){
     int a;
-    int b;
-    my_scanf("%d %d", &a, &b);
+    my_scanf("%d", &a);
+    my_scanf("%d", &a);
+    my_scanf("%d", &a);
+
 
     return 0;
 }
