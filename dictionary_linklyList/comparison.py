@@ -1,3 +1,6 @@
+import random
+import time
+
 class Linked_node:
     def __init__(self, prev=None, next=None, value=None):
         self.prev = prev
@@ -51,20 +54,26 @@ class Linked_list:
     def search_Node(self, word):
         currentNode = self.head
         num = 1
-        #if the word is it the lower middle of the alphabet a-l
-        if(word[0].lower() > 'm'):
-            currentNode = self.tail
-            num = self.size
-            while currentNode and currentNode.value[0] != word:
-                currentNode = currentNode.prev
-                num -= 1
-                if(currentNode.value[0][0] < 'm'): break
-        #if the word is in the upper middle of the alphabet n-z
-        else:
-            while currentNode and currentNode.value[0] != word:
-                currentNode = currentNode.next
-                num += 1
-                if(currentNode.value[0][0] > 'm'): break
+        # ORIGINAL PROPOSAL (OPTIMIZED)
+        # #if the word is it the lower middle of the alphabet a-l
+        # if(word[0].lower() > 'm'):
+        #     currentNode = self.tail
+        #     num = self.size
+        #     while currentNode and currentNode.value[0] != word:
+        #         currentNode = currentNode.prev
+        #         num -= 1
+        #         if(currentNode.value[0][0] < 'm'): break
+        # #if the word is in the upper middle of the alphabet n-z
+        # else:
+        #     while currentNode and currentNode.value[0] != word:
+        #         currentNode = currentNode.next
+        #         num += 1
+        #         if(currentNode.value[0][0] > 'm'): break
+
+        # FOR TESTING (UN-OPTIMIZED)
+        while currentNode and currentNode.value[0] != word:
+            currentNode = currentNode.next
+            num += 1
 
         if not currentNode or currentNode.value[0] != word:
             return (-1,"Not found\n")
@@ -74,14 +83,28 @@ class Linked_list:
 #create the dictionary
 dictionary = Linked_list()
 
+#10k words to search randomly
+wordsToSearch = []
+
 #open the file
 with open("randdict_utf8.TXT") as f:
     for x in f:
         value = x.split(":") #split each word by [word, definition]
         dictionary.add_Node(value[0].strip().lower(), value[1])
+        if(len(wordsToSearch) < 10000):
+            wordsToSearch.append(value[0].strip().lower()) if random.choice([0,1]) == 0 else ""
 
-while(True):
-    wordToSearch = input("Search for word (lowercase) (-1 to exit): ")
-    if(wordToSearch == "-1"): break
-    foundMatch = dictionary.search_Node(wordToSearch)
-    print(f"({foundMatch[0]}) {foundMatch[1]}")
+
+#start timer
+start_time = time.perf_counter()
+
+#search for the 10k random selected words
+for word in wordsToSearch:
+    foundMatch = dictionary.search_Node(word)
+
+#end timer
+end_time = time.perf_counter()
+
+#calculate time
+elapsed = end_time - start_time
+print(f"It took: {elapsed:.6f} seconds")
