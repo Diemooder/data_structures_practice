@@ -1,0 +1,11 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "code.c"
+    ],
+    "directory": "/home/diego/Documents/programming/data_structures_practice/sorting_algorithms/quick_sort",
+    "file": "/home/diego/Documents/programming/data_structures_practice/sorting_algorithms/quick_sort/code.c"
+  }
+]

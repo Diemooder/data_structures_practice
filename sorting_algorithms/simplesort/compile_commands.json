@@ -1,0 +1,11 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "simplesort.c"
+    ],
+    "directory": "/home/diego/Documents/programming/data_structures_practice/sorting_algorithms",
+    "file": "/home/diego/Documents/programming/data_structures_practice/sorting_algorithms/simplesort.c"
+  }
+]
