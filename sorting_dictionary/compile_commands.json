@@ -1,0 +1,11 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "code.c"
+    ],
+    "directory": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary",
+    "file": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary/code.c"
+  }
+]

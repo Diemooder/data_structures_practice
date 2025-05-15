@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/diego/Documents/programming/data_structures_practice/personal_scanf",
-      "program": "/home/diego/Documents/programming/data_structures_practice/personal_scanf/build/Debug/outDebug",
+      "cwd": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary",
+      "program": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary/a.out",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
