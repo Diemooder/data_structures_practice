@@ -107,24 +107,28 @@ void remove_newline(char* str) {
 
 //Initialize dictionary array
 DictionaryEntry* array_initializer(int* currentSize){
+    //open file
     FILE* file = fopen("randdict_utf8.TXT", "r");
 
+    //buffer for entry
     char line[256];
     int dictionary_max_size = 20;
     DictionaryEntry* dictionary = malloc(dictionary_max_size * sizeof(DictionaryEntry));
 
+    //if file does not exist
     if(file != NULL){
+        //for every while there are lines in our file
         while(fgets(line,sizeof(line), file)){
-            DictionaryEntry current;
-            current.entry = malloc(strlen(line) + 1);
-            remove_newline(line);
-            strcpy(current.entry, line);
+            DictionaryEntry current; //the entry to add
+            current.entry = malloc(strlen(line) + 1); //assign memory to entry
+            remove_newline(line); //remove new line
+            strcpy(current.entry, line); // add line to entry
 
-            char word[30] = {0,};
-            strncpy(word, line, search_separator(line, ':')-1);
-            current.word = malloc(strlen(word) + 1);
-            for(int i = 0; i < strlen(word); i++) word[i] = tolower(word[i]);
-            strcpy(current.word, word);
+            char word[30] = {0,}; //space for word
+            strncpy(word, line, search_separator(line, ':')-1); //copy the word in word
+            current.word = malloc(strlen(word) + 1); //space for word in entry
+            for(int i = 0; i < strlen(word); i++) word[i] = tolower(word[i]); // to lower
+            strcpy(current.word, word); //copy word to word entry
 
             dictionary[(*currentSize)++] = current;
 
@@ -169,17 +173,19 @@ void num_assign(DictionaryEntry* a, int n) {for(int i = 0; i < n; i++) a[i].numb
 //BINARY SEARCH FUNCTION
 DictionaryEntry search_word(DictionaryEntry* a, int n, char* objective, int* cmp_cnt){
     for(int i = 0; i < strlen(objective); i++) objective[i] = tolower(objective[i]); //to lower case
-    int middle, start = 0, end = n;
+    int middle, start = 0, end = n - 1;
     while(start <= end){
-        middle = (int) (start+end) / 2;
+        middle = (start + end) / 2;
         (*cmp_cnt)++;
-        if(strcmp(a[middle].word, objective) == 0) return a[middle]; //return if found
-        else if(strcmp(a[middle].word, objective) > 0) end = middle;
-        else if(strcmp(a[middle].word, objective) < 0) start = middle;
+        int cmp_result = strcmp(a[middle].word, objective);
+        if(cmp_result == 0) return a[middle];
+        else if(cmp_result > 0) end = middle - 1;
+        else start = middle + 1;
     }
     DictionaryEntry notFound = {"Not found", "Undefined", -1};
     return notFound;
 }
+
 
 int main(){
     int size = 0, size2 = 0, size3= 0;
