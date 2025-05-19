@@ -1,4 +1,4 @@
-import time
+import time, math
 
 class DictionaryEntry:
     def __init__(self, entry='', word='', number=0):
@@ -13,15 +13,6 @@ def swap(a, x, y):
     except IndexError:
         print("", end="")
 
-#insert sort
-def insert_sort(a):
-    for i in range(1, len(a)):
-        key = a[i]
-        j = i - 1
-        while j >= 0 and a[j].word > key.word:
-            a[j + 1] = a[j]
-            j -= 1
-        a[j + 1] = key
 
 #partitioner of quick sort, returns pivot
 def partitioner(a,start,end):
@@ -45,7 +36,17 @@ def quick_sort(a, start, end):
             start = pivot + 1
         else:
             quick_sort(a, pivot + 1, end)
-            end = pivot - 1
+            end = pivot - 1\
+
+#insert sort
+def insert_sort(a):
+    for i in range(1, len(a)):
+        key = a[i]
+        j = i - 1
+        while j >= 0 and a[j].word > key.word:
+            a[j + 1] = a[j]
+            j -= 1
+        a[j + 1] = key
 
 #heapify
 def heapify(a, root, n):
@@ -68,6 +69,23 @@ def heapsort(a):
         swap(a, 1, i+1)
         heapify(a, 1, i)
 
+def personal_sort(a, start, end, depth_limit):
+    if(end - start < 32):
+        insert_sort(a+start, end - start + 1)
+        return
+    if(depth_limit == 0):
+        heapsort(a + start, end - start + 1)
+        return
+    while(start < end):
+        pivot = partitioner(a, start, end)
+
+        if(pivot - start < end - pivot):
+            quick_sort(a, start, pivot - 1)
+            start = pivot + 1
+        else:
+            quick_sort(a, pivot + 1, end)
+            end = pivot - 1\
+
 #Initialize dictionary array
 def array_initializer():
     dictionary = []
@@ -82,41 +100,22 @@ def array_initializer():
         print("FIle not found")
         return []
 
-#print array
-def print_array(a):
-    for element in a:
-        print(f"Entry: {a[i].entry} Word: {a[i].word}")
+
+def sort_key(entry):
+    return entry.word
 
 #function time measurer
 def measure_time(x, a):
     #start timer
     start_time = time.perf_counter()
-    if(x == 1): insert_sort(a)
-    elif(x == 2): quick_sort(a,0,len(a)-1)
-    elif(x == 3): heapsort(a)
+    if(x == 1): quick_sort(a,0,len(a)-1)
+    elif(x == 2): a.sort(key=sort_key)
+    elif(x == 3): personal_sort(a,0,len(a)-1,2 * int(math.log2(len(a))))
     #end timer
     end_time = time.perf_counter()
     #calculate time
     elapsed = end_time - start_time
     return elapsed
-
-#number assigner
-def num_assign(a): 
-    for i in range(len(a)): a[i].number = i+1
-
-#BINARY SEARCH FUNCTION
-def search_word(a, objective):
-    cmp_cnt = 0
-    objective = objective.lower()
-    start, end = 0, len(a) - 1
-    while(start <= end):
-        middle = (start+end) // 2
-        cmp_cnt += 1
-        if(a[middle].word == objective): return a[middle], cmp_cnt
-        elif(a[middle].word > objective): end = middle -1
-        elif(a[middle].word < objective): start = middle + 1
-    return DictionaryEntry("Not found", "Undefined", -1), cmp_cnt
-
 
 def main():
     # Initialize dictionaries
@@ -125,28 +124,11 @@ def main():
     dictionary3 = array_initializer()
 
     # Calculate and show sort times
-    inst_time = measure_time(1, dictionary)
+    myqt_time = measure_time(1, dictionary)
     quik_time = measure_time(2, dictionary2)
-    heap_time = measure_time(3, dictionary3)
+    best_time = measure_time(3, dictionary3)
 
-    print(f"Insertion sort time: {inst_time:.6f} seconds")
-    print(f"Quick sort time    : {quik_time:.6f} seconds")
-    print(f"Heap sort time     : {heap_time:.6f} seconds")
-
-    # Assign numbers to the sorted dictionary
-    num_assign(dictionary)
-
-    # Search loop
-    while True:
-        objective = input("Search for word (-1 to exit): ").strip()
-        if objective == "-1":
-            break
-
-        result, comparisons = search_word(dictionary, objective)
-        
-        if result.number == -1:
-            print("(Not found)")
-        else:
-            print(f"({result.number}: {comparisons}) {result.entry}\n")
-
+    print(f"My Quick sort time: {myqt_time:.6f} seconds")
+    print(f"Pythons  sort time: {quik_time:.6f} seconds")
+    print(f"Personal sort time: {best_time:.6f} seconds")
 main()

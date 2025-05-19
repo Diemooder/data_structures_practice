@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary",
-      "program": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary/a.out",
+      "cwd": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary_comparisons",
+      "program": "/home/diego/Documents/programming/data_structures_practice/sorting_dictionary_comparisons/a.out",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
