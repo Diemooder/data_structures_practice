@@ -142,11 +142,6 @@ DictionaryEntry* array_initializer(int* currentSize){
     return dictionary;
 }
 
-//print array
-void print_array(DictionaryEntry* a, int n){
-    for(int i = 0; i < n; i++) printf("Entry: %s Word: %s\n", a[i].entry, a[i].word);
-}
-
 //function time measurer
 double measure_time(int x, DictionaryEntry* a, int n){ 
     clock_t t;
