@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/diego/Documents/programming/data_structures_practice/training/stack_implementation",
-      "program": "/home/diego/Documents/programming/data_structures_practice/training/stack_implementation/a.out",
+      "cwd": "/home/diego/Documents/programming/data_structures_practice/training/queue_implementation",
+      "program": "/home/diego/Documents/programming/data_structures_practice/training/queue_implementation/a.out",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -17,7 +17,7 @@ ListNode create(int size){
 
 int is_empty(ListNode* list){return (list->tail == -1) ? 1 : 0;}
 
-int is_full(ListNode* list){return (list->tail + 1) == list->size ? 1 : 0;}
+int is_full(ListNode* list){return ((list->tail + 1) % list->size) == list->size ? 1 : 0;}
 
 char* peek(ListNode* list){
     if(is_empty(list)){
@@ -27,14 +27,24 @@ char* peek(ListNode* list){
     return list->link[list->head];
 }
 
-void print_queue(ListNode* List){
-    printf("head: %d\n", List->head);
-    printf("tail: %d\n", List->tail);
+void print_queue(ListNode* list){
+    printf("head: %d\n", list->head);
+    printf("tail: %d\n", list->tail);
     printf("[");
-    for(int i = List->head; i < List->size; i++){
-        printf("%s", List->link[(i) % List->size]);
-        if(i < (List->size - 1)) printf(", ");
+
+    if (is_empty(list)) {
+        printf("]\n");
+        return;
     }
+
+    int i = list->head;
+    while (1) {
+        printf("%s", list->link[i]);
+        if (i == list->tail) break;
+        printf(", ");
+        i = (i + 1) % list->size;
+    }
+
     printf("]\n");
 }
 
@@ -44,15 +54,9 @@ void enqueue(ListNode* list, char* data){
         printf("ERROR: Cannot add to full list");
         exit(1);
     }
-    if(is_empty(list)){
-        list->head++;
-        list->tail++;
-        list->link[list->tail] = data;
-    }else{
-        int next_pos = (list->tail + 1) % list->size;
-        list->link[next_pos] = data;
-        list->tail++;
-    }
+    if(is_empty(list)) list->head = list->tail = 0;
+    else list->tail = (list->tail + 1) % list->size;
+    list->link[list->tail] = data;
     print_queue(list);
 }
 
@@ -74,8 +78,15 @@ int main(){
     enqueue(&queue, "MIDU");
     enqueue(&queue, "Jesus");
     dequeue(&queue);
-    // enqueue(&queue, "Dani");
-    // enqueue(&queue, "Santi");
-    // enqueue(&queue, "Papa");
+    enqueue(&queue, "Dani");
+    enqueue(&queue, "Santi");
+    enqueue(&queue, "Papa");
+    dequeue(&queue);
+    enqueue(&queue, "Pangu");
+    dequeue(&queue);
+    dequeue(&queue);
+    dequeue(&queue);
+    dequeue(&queue);
+    dequeue(&queue);
     return 0;
 }
