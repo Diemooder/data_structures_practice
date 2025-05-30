@@ -108,19 +108,57 @@ Node* line_handler(char* line){
 Node* Create_tree(Node* root){
 	//open file
 	FILE* file = fopen("randdict_utf8.TXT", "r");
-
+	
+	//check if file is found
+	if(!file){
+		printf("File not found.\n");
+		return NULL;
+	}
 	//buffer for entry
 	char line[256];
 	
 	//insert elements
-	if(file != NULL){ while(fgets(line, sizeof(line), file)){ add(root, line_handler(line));}}
+	while (fgets(line, sizeof(line), file)) {
+        	Node* node = line_handler(line);
+        	if (node != NULL) root = add(root, node);
+    	}
+	fclose(file);
+	return root;
 }
 
+//Memory free for tree
+void free_tree(Node* root){
+	if(root == NULL) return;
+	
+	free_tree(root->left);
+	free_tree(root->right);
+
+	free(root->word);
+	free(root->meaning);
+	free(root);	
+}
 
 //YOU ARE STILL FIGURING OUT HOW TO WORK OUT ON THIS TREE
 
 int main(){
-	Node rootNode;
-	
+	Node* rootNode = NULL;
+	rootNode = Create_tree(rootNode);
+
+	//Print the dictionary details before search
+	printf("사전 파일을 모두 읽었습니다. %d개의 단어가 있습니다.\n", num_nodes(rootNode)); 
+	printf("트리의 전체 높이는 %d입니다. 트리의 노드 수는 %d개 입니다\n\n", tree_height(rootNode), num_nodes(rootNode)); 	
+
+	//Search functionality
+	char input[100];
+	while(1){
+		printf("단어를 입력하세요: ");
+		if(!fgets(input, sizeof(input), stdin)) break;
+		remove_newline(input);
+		if(strlen(input) == 0) break;
+		if(binary_search(rootNode, input, 1) == -1) printf("해당 단어가 없습니다.\n");
+	}
+
+	//Free memory
+	free_tree(rootNode);
 	return 0;
 }
