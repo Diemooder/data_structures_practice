@@ -12,6 +12,8 @@ def tokenizer(recieved_expression):
     foundNum = False #to keep track of numbers 
     num_string = "" #storage for numbers until finished (helps with numbers with more than 1 digit)
     prev_Num = False #helps to maintain the number operator number operator order
+    open_parenthesis = 0
+    prev_closing_parenthesis = False
 
     for char in recieved_expression: #for each char
         if(char != " "): #if it is not a space
@@ -22,9 +24,18 @@ def tokenizer(recieved_expression):
                 if char not in {'+', '-', '*', '/', '(', ')'}: #if it is not any of the valid operators
                     raise ValueError("Invalid Input: Illegal input detected") #throw error
                 else: #if it is 
-                    if prev_Num: #check if the previous added element was a number, if it is
-                        characters.append(char) #add the operator
-                        prev_Num = False #set that the previous added was not a number (so an operator)
+                    if prev_Num or (char in {'(', ')'}) or prev_closing_parenthesis: #check if the previous added element was a number, if it is
+                        if(open_parenthesis == 0 and char == ')'): raise ValueError("Invalid Input: Illegal parenthesis") #In case we try to close a non existing parenthesis
+                        else: #if we are not
+                            if(foundNum and char == ')'): #this prevents rejecting '2)' like parts
+                                num_string, foundNum, prev_Num = append_Num(characters, num_string, foundNum, prev_Num)
+                            if char == '(': open_parenthesis += 1 #track opened parenthesis
+                            characters.append(char) #add the operator
+                            if char == ')': #track closed parenthesis
+                                open_parenthesis -= 1
+                                prev_closing_parenthesis = True #this and the below line prevent ') *' alike expressions to be completely rejected
+                            else: prev_closing_parenthesis = False
+                            prev_Num = False #set that the previous added was not a number (so an operator)
                     else: #if it is not
                         raise ValueError("Invalid Input: Illegal sequential operators") #throw error
         else: #if it is a space
@@ -33,8 +44,20 @@ def tokenizer(recieved_expression):
             else: #if it was
                 raise ValueError("Invalid Input: Illegal sequential numbers") #throw error
     append_Num(characters, num_string, foundNum, prev_Num) #add the last number
+    if(open_parenthesis > 0): raise ValueError("Invalid Input: No matched parenthesis") #in case there are remaining parenthesis
+    if(not characters[-1].isdigit() and characters[-1] != ')'): raise ValueError("Invalid Input: Illegal final symbol") #in case there are left over symbols
             
-    return characters #return
+    return characters #retrn
 
+def infix_to_postfix(tokens):
+    stack = []
+    postfix = []
 
-print(tokenizer("23 + 211 + 42 - 1 + 31111"))
+    for token in tokens:
+        if token.isdigit():
+            postfix.append(token)             
+        else:
+            if(len(stack) == 0): stack.append(token)
+
+tokenized_input = tokenizer("(2 * 2)(2 * 2)")
+print(tokenized_input)
