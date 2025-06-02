@@ -138,7 +138,6 @@ void free_tree(Node* root){
 	free(root);	
 }
 
-//YOU ARE STILL FIGURING OUT HOW TO WORK OUT ON THIS TREE
 
 int main(){
 	Node* rootNode = NULL;
