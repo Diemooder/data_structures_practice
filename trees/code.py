@@ -1,3 +1,9 @@
+class TreeNode:
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
 #tokenizer number helper (to not repeat myself)
 def append_Num(characters, num_string, foundNum, prev_Num):
     if foundNum: #If there is a number stored in num_string
@@ -5,7 +11,7 @@ def append_Num(characters, num_string, foundNum, prev_Num):
         return "", False, True #return new updated values
     return num_string, foundNum, prev_Num #do nothing if no number stored
 
-
+#detector and revisionist of a string expression
 def tokenizer(recieved_expression):
     characters = [] #array to return
 
@@ -47,17 +53,102 @@ def tokenizer(recieved_expression):
     if(open_parenthesis > 0): raise ValueError("Invalid Input: No matched parenthesis") #in case there are remaining parenthesis
     if(not characters[-1].isdigit() and characters[-1] != ')'): raise ValueError("Invalid Input: Illegal final symbol") #in case there are left over symbols
             
-    return characters #retrn
+    return characters #return
 
+#Converts infix to postfix to build the tree easily
 def infix_to_postfix(tokens):
-    stack = []
-    postfix = []
+    stack = [] #stack for the algorithm
+    postfix = [] #the return array
 
-    for token in tokens:
-        if token.isdigit():
-            postfix.append(token)             
-        else:
-            if(len(stack) == 0): stack.append(token)
+    #precedence dictionary
+    precedence = {
+        '*' : 1,
+        '/' : 1,
+        '+' : 0,
+        '-' : 0,
+    }
 
-tokenized_input = tokenizer("(2 * 2)(2 * 2)")
-print(tokenized_input)
+    for token in tokens: #loop through the tokens
+        if token.isdigit(): #if it is a digit
+            postfix.append(token) #we just add it to the postfix 
+        else: #if it is not
+            if(len(stack) == 0): stack.append(token) #if the stack is empty, just push
+            elif(token == '('): stack.append(token) #if it is a parenthesis, just push
+            elif(token == ')'): #if it is closing parenthesis
+                top = stack.pop() #top element
+                while(top != '('): #while the top is not an opening parenthesis
+                    postfix.append(top) #push to output
+                    top = stack.pop() #get new top
+            elif token in precedence: #for any other token
+                #while the stack is not empty, and the stack is not an opening parenthesis, and the top is equal or greater precedence than the token
+                while (stack and stack[-1] != '(' and precedence[stack[-1]] >= precedence[token]):
+                    postfix.append(stack.pop()) #pop top and add to postfix
+                stack.append(token) #if it is no greater precedence, just push the token to stack
+
+    
+    while(len(stack) != 0): #push remaining stack
+        postfix.append(stack.pop())
+    
+    return postfix.copy()
+
+def create_tree(postfix_tokens):
+    stack = [] #stack for building
+
+    for token in postfix_tokens:
+        if token.isdigit(): #if it is a digit
+            stack.append(TreeNode(token)) #create a node and push to stack
+        else: #if it is an operator
+            right_node = stack.pop() #pop one Node for the right Node
+            left_node = stack.pop()  #pop another for the left Node
+            root_node = TreeNode(token) #create new node as current token as the value (basically operator)
+
+            root_node.right = right_node #connect the popped right node to root
+            root_node.left =left_node #connect the popped left node to root
+
+            stack.append(root_node) #push this new tree to stack
+    
+    return stack.pop() #return root node (which would be the unique element on the stack at the end)
+
+#prints the tree like the tree command in Linux btw
+def print_tree(node, prefix="", is_left=True): #prefix tracks the indentation and lines, left defines which connector to use
+    if node is not None: #if node still exists
+        connector = "└── " if is_left else "├── " #if the current node is form the left side (first detected) we select one connector or other
+        print(prefix + connector + str(node.value)) #we print the prefix, the chosen conector and the value
+        
+        # Compute prefix for leafs
+        if node.left or node.right:
+            # If it's the last child, don't draw vertical line below
+            child_prefix = prefix + ("    " if is_left else "│   ")
+            print_tree(node.left, child_prefix, False)  # left goes first
+            print_tree(node.right, child_prefix, True) # then right
+
+#TRAVERSALS
+def preorder_traversal(node):
+    if node is None: return []
+    return [node.value] + preorder_traversal(node.left) + preorder_traversal(node.right)
+
+def inorder_traversal(node):
+    if node is None: return []
+    return inorder_traversal(node.left) + [node.value] + inorder_traversal(node.right)
+
+def postorder_traversal(node):
+    if node is None: return []
+    return postorder_traversal(node.left) + postorder_traversal(node.right) + [node.value]
+
+expression = ""
+while True:
+    expression = input("Enter an expression with spaces for desired behavior\nNO:  2+3*4\nYES: 2 + 3 * 4\n:")
+
+    if len(expression) == 0:
+        break
+
+    tokenized_input = tokenizer(expression)
+    postfix_input = infix_to_postfix(tokenized_input)
+    tree = create_tree(postfix_input)
+    print_tree(tree)
+    preorder = ' '.join(preorder_traversal(tree))
+    print(f"전위표기 : {preorder}")
+    inorder = ' '.join(inorder_traversal(tree))
+    print(f"중위표기 : {inorder}")
+    postorder = ' '.join(postorder_traversal(tree))
+    print(f"후위표기 : {postorder}")
