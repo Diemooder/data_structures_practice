@@ -1,3 +1,5 @@
+from collections import deque
+
 class TreeNode:
     def __init__(self, value, left=None, right=None):
         self.value = value
@@ -91,6 +93,7 @@ def infix_to_postfix(tokens):
     
     return postfix.copy()
 
+#Create the tree with the postfix conversion
 def create_tree(postfix_tokens):
     stack = [] #stack for building
 
@@ -135,6 +138,40 @@ def postorder_traversal(node):
     if node is None: return []
     return postorder_traversal(node.left) + postorder_traversal(node.right) + [node.value]
 
+#Level order traversal
+def level_order_traversal(node):
+    if node is None: #if the node is nothing 
+        return []
+    
+    array = [] #the return array
+    queue = deque([node]) #declare a queue, using the queue library for simplicity
+
+    while queue: #whilethere are elements in queue
+        node = queue.popleft() #take the first added node to the queue and pop it
+        array.append(node.value) #add the value of that popped node
+
+        if node.left: queue.append(node.left) #add to the queue the left node if it exists
+        if node.right: queue.append(node.right) #the same with the right
+    
+    return array
+
+#evaluation
+def evaluate_expression(node):
+    if(node.value.isdigit()): #if the current node in the recursion is a number
+        return int(node.value) #return it
+    else: #if it is not a value, it is an operator
+        #detect for each operator and implement the recursiveness
+        if node.value == '+':
+            return evaluate_expression(node.left) + evaluate_expression(node.right)
+        elif node.value == '-':
+            return evaluate_expression(node.left) - evaluate_expression(node.right)
+        elif node.value == '/':
+            return evaluate_expression(node.left) // evaluate_expression(node.right)
+        elif node.value == '*':
+            return evaluate_expression(node.left) * evaluate_expression(node.right)
+
+
+#"MAIN" LOOP
 expression = ""
 while True:
     expression = input("Enter an expression with spaces for desired behavior\nNO:  2+3*4\nYES: 2 + 3 * 4\n:")
@@ -142,13 +179,17 @@ while True:
     if len(expression) == 0:
         break
 
-    tokenized_input = tokenizer(expression)
-    postfix_input = infix_to_postfix(tokenized_input)
-    tree = create_tree(postfix_input)
+    tokenized_input = tokenizer(expression)             #convert to array, check for errors also
+    postfix_input = infix_to_postfix(tokenized_input)   #convert to postfix notation
+    tree = create_tree(postfix_input)                   #create the tree
     print_tree(tree)
-    preorder = ' '.join(preorder_traversal(tree))
+    preorder = ' '.join(preorder_traversal(tree))       #get the different orders, pre, in, post and level
     print(f"전위표기 : {preorder}")
     inorder = ' '.join(inorder_traversal(tree))
     print(f"중위표기 : {inorder}")
     postorder = ' '.join(postorder_traversal(tree))
     print(f"후위표기 : {postorder}")
+    levelorder = ' '.join(level_order_traversal(tree))
+    print(f"레벨 순회: {levelorder}")
+    evaluation = evaluate_expression(tree)              #evaluate the tree
+    print(f"결과값 : {evaluation}")    
